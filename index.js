@@ -69,7 +69,7 @@
 // app.post('/register', async (req, res) => {
 //     try {
 //         const { email, password, age } = req.body;
-        
+
 //         const existingUser = await User.findOne({ email });
 //         if (existingUser) {
 //             return res.status(400).send({ error: 'Email already registered' });
@@ -171,6 +171,100 @@
 //     console.log(`Server is running on port ${PORT}`);
 // });
 
+//-------------------------------------------------------
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const cors = require('cors');
+
+// const app = express();
+
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
+
+// // MongoDB Atlas Connection
+// const MONGO_URI = 'mongodb+srv://rroyedutech:jnEJRVGz9bf7r3Js@test-pro.igjon.mongodb.net/?retryWrites=true&w=majority&appName=Test-pro';
+// mongoose.connect(MONGO_URI, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+// }).then(() => console.log('Connected to MongoDB Atlas'))
+//   .catch(err => console.error('MongoDB Connection Error:', err));
+
+// // Show Model
+// const showSchema = new mongoose.Schema({
+//     show_id: { type: String, required: true, unique: true },
+//     type: String,
+//     title: String,
+//     director: String,
+//     cast: String,
+//     country: String,
+//     date_added: String,
+//     release_year: Number,
+//     rating: String,
+//     duration: String,
+//     listed_in: String,
+//     description: String
+// });
+
+// const Show = mongoose.model('Show', showSchema);
+
+// // Get Shows with Pagination, Search, and Filters
+// app.get('/shows', async (req, res) => {
+//     try {
+//         const page = parseInt(req.query.page) || 1;
+//         const limit = 15;
+//         const skip = (page - 1) * limit;
+
+//         let query = {};
+
+//         // Type filter
+//         if (req.query.type) {
+//             query.type = req.query.type;
+//         }
+
+//         // Search by title or cast
+//         if (req.query.search) {
+//             query.$or = [
+//                 { title: new RegExp(req.query.search, 'i') },
+//                 { cast: new RegExp(req.query.search, 'i') }
+//             ];
+//         }
+
+//         const total = await Show.countDocuments(query);
+//         const shows = await Show.find(query).skip(skip).limit(limit);
+
+//         res.send({
+//             shows,
+//             total,
+//             pages: Math.ceil(total / limit)
+//         });
+//     } catch (error) {
+//         res.status(500).send({ error: error.message });
+//     }
+// });
+
+// // Get Show Details
+// app.get('/shows/:id', async (req, res) => {
+//     try {
+//         const show = await Show.findOne({ show_id: req.params.id });
+//         if (!show) {
+//             return res.status(404).send({ error: 'Show not found' });
+//         }
+//         res.send(show);
+//     } catch (error) {
+//         res.status(500).send({ error: error.message });
+//     }
+// });
+
+// // Start Server
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });
+
+// // Vercel requires `module.exports`
+// module.exports = app;
+
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -183,12 +277,12 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Atlas Connection
-const MONGO_URI = 'mongodb+srv://rroyedutech:jnEJRVGz9bf7r3Js@test-pro.igjon.mongodb.net/?retryWrites=true&w=majority&appName=Test-pro';
+const MONGO_URI = process.env.MONGO_URI;  // Use environment variable for MongoDB URI
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log('Connected to MongoDB Atlas'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
+    .catch(err => console.error('MongoDB Connection Error:', err));
 
 // Show Model
 const showSchema = new mongoose.Schema({
@@ -208,59 +302,14 @@ const showSchema = new mongoose.Schema({
 
 const Show = mongoose.model('Show', showSchema);
 
-// Get Shows with Pagination, Search, and Filters
-app.get('/shows', async (req, res) => {
+// Routes
+app.get('/api/shows', async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = 15;
-        const skip = (page - 1) * limit;
-
-        let query = {};
-
-        // Type filter
-        if (req.query.type) {
-            query.type = req.query.type;
-        }
-
-        // Search by title or cast
-        if (req.query.search) {
-            query.$or = [
-                { title: new RegExp(req.query.search, 'i') },
-                { cast: new RegExp(req.query.search, 'i') }
-            ];
-        }
-
-        const total = await Show.countDocuments(query);
-        const shows = await Show.find(query).skip(skip).limit(limit);
-
-        res.send({
-            shows,
-            total,
-            pages: Math.ceil(total / limit)
-        });
+        const shows = await Show.find();
+        res.send(shows);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
 });
-
-// Get Show Details
-app.get('/shows/:id', async (req, res) => {
-    try {
-        const show = await Show.findOne({ show_id: req.params.id });
-        if (!show) {
-            return res.status(404).send({ error: 'Show not found' });
-        }
-        res.send(show);
-    } catch (error) {
-        res.status(500).send({ error: error.message });
-    }
-});
-
-// Start Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
 // Vercel requires `module.exports`
 module.exports = app;
