@@ -1,0 +1,15 @@
+//rroyedutech
+//cYwe0n7bdQQ5jv3J
+
+//mongodb+srv://<db_username>:<db_password>@datatest.gw58n.mongodb.net/?retryWrites=true&w=majority&appName=DataTest
+
+
+
+
+
+
+//rroyedutech
+
+//jnEJRVGz9bf7r3Js
+
+//mongodb+srv://rroyedutech:jnEJRVGz9bf7r3Js@test-pro.igjon.mongodb.net/?retryWrites=true&w=majority&appName=Test-pro
